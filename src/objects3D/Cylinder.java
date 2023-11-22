@@ -46,4 +46,54 @@ public class Cylinder {
 		}
 		GL11.glEnd();
 	}
+	public void drawClosedCylinder(float radius, float height, int nSegments ){
+		GL11.glBegin(GL11.GL_TRIANGLES);
+		float angle, nextAngle;
+		float x1, x2, y1, y2;
+
+		// Loop through each slice
+		for (float i = 0; i < nSegments; i += 1.0f) {
+			angle = (float) (Math.PI * i * 2.0 / nSegments);
+			nextAngle = (float) (Math.PI * (i + 1.0) * 2.0 / nSegments);
+
+			// Compute sin & cosine
+			x1 = (float) Math.sin(angle) * radius;
+			x2 = (float) Math.sin(nextAngle) * radius;
+			y1 = (float) Math.cos(angle) * radius;
+			y2 = (float) Math.cos(nextAngle) * radius;
+
+			// Draw side triangles
+			GL11.glNormal3f(x1, y1, 0);
+			GL11.glVertex3f(x1, y1, 0);
+			GL11.glNormal3f(x2, y2, 0);
+			GL11.glVertex3f(x2, y2, height);
+			GL11.glNormal3f(x1, y1, 0);
+			GL11.glVertex3f(x1, y1, height);
+
+			// Draw bottom triangle
+			GL11.glNormal3f(0, 0, -1);  // Normal vector for bottom face
+			GL11.glVertex3f(0, 0, 0);
+			GL11.glNormal3f(x1, y1, 0);
+			GL11.glVertex3f(x1, y1, 0);
+			GL11.glNormal3f(x2, y2, 0);
+			GL11.glVertex3f(x2, y2, 0);
+
+			// Draw top triangle
+			GL11.glNormal3f(0, 0, 1);  // Normal vector for top face
+			GL11.glVertex3f(0, 0, height);
+			GL11.glNormal3f(x1, y1, 0);
+			GL11.glVertex3f(x1, y1, height);
+			GL11.glNormal3f(x2, y2, 0);
+			GL11.glVertex3f(x2, y2, height);
+
+			/* draw bottom triangle */
+			GL11.glNormal3f(x2,y2,0);
+			GL11.glNormal3f(x2, y2, 0);
+			GL11.glVertex3f(x1,y1,0);
+			GL11.glVertex3f(x2,y2,0);
+			GL11.glVertex3f(x2,y2,height);
+		}
+
+		GL11.glEnd();
+	}
 }

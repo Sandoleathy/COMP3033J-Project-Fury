@@ -91,6 +91,8 @@ public class MainWindow {
 	static float dkgreen[] = { 0.0f, 0.5f, 0.0f, 1.0f, 1.0f };
 	static float pink[] = { 1.0f, 0.6f, 0.6f, 1.0f, 1.0f };
 
+	/**tank values */
+	M4A3E8 easy8 = new M4A3E8();
 	// static GLfloat light_position[] = {0.0, 100.0, 100.0, 0.0};
 
 	// support method to aid in converting a java float array into a Floatbuffer
@@ -185,6 +187,20 @@ public class MainWindow {
 			rotation += 0.35f * delta;
 		if (Keyboard.isKeyDown(Keyboard.KEY_E)) {
 			Earth = !Earth;
+		}
+
+		/**tank control */
+		if(Keyboard.isKeyDown(Keyboard.KEY_UP)){
+			easy8.pitchAngle += 0.1f;
+		}
+		if(Keyboard.isKeyDown(Keyboard.KEY_DOWN)){
+			easy8.pitchAngle -= 0.1f;
+		}
+		if(Keyboard.isKeyDown(Keyboard.KEY_RIGHT)){
+			easy8.turretAngle += 1;
+		}
+		if(Keyboard.isKeyDown(Keyboard.KEY_LEFT)){
+			easy8.turretAngle -= 1;
 		}
 		
 		if (waitForKeyrelease) // check done to see if key is released
@@ -382,7 +398,6 @@ public class MainWindow {
 
 		glPushMatrix();
 		//Human MyHuman = new Human();
-		M4A3E8 tank1 = new M4A3E8();
 		glTranslatef(300, 400, 0);
 		glScalef(90f, 90f, 90f);
 
@@ -396,7 +411,7 @@ public class MainWindow {
 			//glTranslatef(posn_x * 3.0f, 0.0f, posn_y * 3.0f);
 		}
 
-		tank1.drawTank(!BadAnimation , textureList);
+		easy8.drawTank(!BadAnimation , textureList , easy8.turretAngle , easy8.pitchAngle);
 		//MyHuman.drawHuman(delta, !BadAnimation , textureList); // give a delta for the Human object ot be animated
 
 		glPopMatrix();

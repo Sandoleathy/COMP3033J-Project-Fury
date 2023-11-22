@@ -14,13 +14,13 @@ import static java.lang.Math.*;
 import static org.lwjgl.opengl.GL11.*;
 
 public class M4Body {
-    static float white[] = { 1.0f, 1.0f, 1.0f, 1.0f };
-    static float black[] = { 0.0f, 0.0f, 0.0f, 1.0f };
+    static float[] white = { 1.0f, 1.0f, 1.0f, 1.0f };
+    static float[] black = { 0.0f, 0.0f, 0.0f, 1.0f };
     public M4Body(){
 
     }
     public void drawBody(){
-        float width = 5.0f;
+        float width = 4.5f;
         //y is vertical
         //z is front back
         //x is left right
@@ -37,29 +37,29 @@ public class M4Body {
             pList.add(new Point4f(-2,-1.5f,-width,0)); //2
             pList.add(new Point4f(-2,-1.5f,width,0)); //3
 
-            pList.add(new Point4f(2,-2,-width,0)); //4
-            pList.add(new Point4f(2,-2,width,0)); //5
-            pList.add(new Point4f(2,2,-width,0)); //6
-            pList.add(new Point4f(2,2,width,0)); //7
+            pList.add(new Point4f(1f,-2,-width,0)); //4
+            pList.add(new Point4f(1f,-2,width,0)); //5
+            pList.add(new Point4f(1f,1f,-width,0)); //6
+            pList.add(new Point4f(1f,1f,width,0)); //7
             DynamicTexCube dynamicTexCube = new DynamicTexCube(pList);
             dynamicTexCube.drawTexCube();
 
             glPushMatrix();{
                 //here is the turret base
 
-                glTranslatef(4.0f, 0.0f, 0.0f);
+                glTranslatef(3.0f, 0.0f, 0.0f);
 
                 pList = new ArrayList<>();
                 pList.add(new Point4f(-2,-2,-width,0)); //0
                 pList.add(new Point4f(-2,-2,width,0)); //1
 
-                pList.add(new Point4f(-2,2f,-width,0)); //2
-                pList.add(new Point4f(-2,2f,width,0)); //3
+                pList.add(new Point4f(-2,1f,-width,0)); //2
+                pList.add(new Point4f(-2,1f,width,0)); //3
 
                 pList.add(new Point4f(3,-2,-width,0)); //4
                 pList.add(new Point4f(3,-2,width,0)); //5
-                pList.add(new Point4f(3,2f,-width,0)); //6
-                pList.add(new Point4f(3,2f,width,0)); //7
+                pList.add(new Point4f(3,1f,-width,0)); //6
+                pList.add(new Point4f(3,1f,width,0)); //7
 
                 dynamicTexCube = new DynamicTexCube(pList);
                 dynamicTexCube.drawTexCube();
@@ -73,8 +73,8 @@ public class M4Body {
                     pList.add(new Point4f(-2,-2,-width,0)); //0
                     pList.add(new Point4f(-2,-2,width,0)); //1
 
-                    pList.add(new Point4f(-2,2f,-width,0)); //2
-                    pList.add(new Point4f(-2,2f,width,0)); //3
+                    pList.add(new Point4f(-2,1f,-width,0)); //2
+                    pList.add(new Point4f(-2,1f,width,0)); //3
 
                     pList.add(new Point4f(5,-2,-width,0)); //4
                     pList.add(new Point4f(5,-2,width,0)); //5
@@ -135,9 +135,9 @@ public class M4Body {
                 glPushMatrix();{
                     //left track
                     //glColor3f(black[0], black[1], black[2]);
-                    glTranslatef(0.0f , -0.2f , -5.0f);
+                    glTranslatef(0.0f , -0.6f , -4.5f);
 
-                    float trackWidth = 2.0f;
+                    float trackWidth = 1.5f;
                     pList = new ArrayList<>();
                     pList.add(new Point4f(2,-2.5f,-0,0)); //0
                     pList.add(new Point4f(2,-2.5f,trackWidth,0)); //1
@@ -157,9 +157,9 @@ public class M4Body {
                 glPopMatrix();
                 glPushMatrix();{
                     //right track
-                    glTranslatef(0.0f , -0.2f , 3.0f);
+                    glTranslatef(0.0f , -0.6f , 3.0f);
 
-                    float trackWidth = 2.0f;
+                    float trackWidth = 1.5f;
                     pList = new ArrayList<>();
                     pList.add(new Point4f(2,-2.5f,-0,0)); //0
                     pList.add(new Point4f(2,-2.5f,trackWidth,0)); //1
