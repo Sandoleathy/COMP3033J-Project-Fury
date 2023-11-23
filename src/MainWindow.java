@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import objects3D.models.M4A3E8;
+import objects3D.models.TigerI;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.Sys;
@@ -64,7 +65,7 @@ public class MainWindow {
 	float pullX = 0.0f; // arc ball X cord.
 	float pullY = 0.0f; // arc ball Y cord.
 
-	int OrthoNumber = 1200; // using this for screen size, making a window of 1200 x 800 so aspect ratio 3:2
+	int OrthoNumber = 4096; // using this for screen size, making a window of 1200 x 800 so aspect ratio 3:2
 							// // do not change this for assignment 3 but you can change everything for your
 							// project
 
@@ -93,6 +94,9 @@ public class MainWindow {
 
 	/**tank values */
 	M4A3E8 easy8 = new M4A3E8();
+	TigerI tigerTank = new TigerI();
+
+	/** */
 	// static GLfloat light_position[] = {0.0, 100.0, 100.0, 0.0};
 
 	// support method to aid in converting a java float array into a Floatbuffer
@@ -197,11 +201,13 @@ public class MainWindow {
 			easy8.pitchAngle -= 0.1f;
 		}
 		if(Keyboard.isKeyDown(Keyboard.KEY_RIGHT)){
-			easy8.turretAngle += 1;
+			easy8.turretAngle += (float) 24 /60;
 		}
 		if(Keyboard.isKeyDown(Keyboard.KEY_LEFT)){
-			easy8.turretAngle -= 1;
+			easy8.turretAngle -= (float) 24 /60;
 		}
+
+		/** */
 		
 		if (waitForKeyrelease) // check done to see if key is released
 		{
@@ -397,23 +403,36 @@ public class MainWindow {
 		}
 
 		glPushMatrix();
-		//Human MyHuman = new Human();
-		glTranslatef(300, 400, 0);
-		glScalef(90f, 90f, 90f);
+		{
 
-		if (!BadAnimation) {
-			// insert your animation code to correct the postion for the human rotating
+			Human MyHuman = new Human();
+			glTranslatef(300, 400, 0);
+			glScalef(100f, 100f, 100f);
+
+			if (!BadAnimation) {
+				// insert your animation code to correct the postion for the human rotating
 			/*glTranslatef(posn_x * 3.0f, 0.0f, posn_y * 3.0f);
 			glRotatef(thetaDeg,0.0f,1.0f,0.0f);*/
-		} else {
+			} else {
 
-			// bad animation version
-			//glTranslatef(posn_x * 3.0f, 0.0f, posn_y * 3.0f);
+				// bad animation version
+				//glTranslatef(posn_x * 3.0f, 0.0f, posn_y * 3.0f);
+			}
+
+
+			easy8.drawTank(!BadAnimation, textureList, easy8.turretAngle, easy8.pitchAngle);
+
+			//MyHuman.drawHuman(delta, !BadAnimation , textureList); // give a delta for the Human object ot be animated
 		}
+		glPopMatrix();
+		/**tiger tank */
+		glPushMatrix();{
+			glTranslatef(-500, 400, 0);
+			glScalef(90f, 90f, 90f);
+			glRotatef(180, 0,1,0);
+			tigerTank.drawTank(!BadAnimation, textureList, easy8.turretAngle, easy8.pitchAngle);
 
-		easy8.drawTank(!BadAnimation , textureList , easy8.turretAngle , easy8.pitchAngle);
-		//MyHuman.drawHuman(delta, !BadAnimation , textureList); // give a delta for the Human object ot be animated
-
+		}
 		glPopMatrix();
 
 		/*

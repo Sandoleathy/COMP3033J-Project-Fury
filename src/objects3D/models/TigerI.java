@@ -1,26 +1,25 @@
 package objects3D.models;
 
-import objects3D.*;
 import objects3D.iFace.AmericanTanks;
 import objects3D.iFace.ShermanTank;
-import objects3D.models.componments.M4Body;
-import objects3D.models.componments.M4Turret;
+import objects3D.models.componments.TigerBody;
+import objects3D.models.componments.TigerTurret;
 import org.newdawn.slick.opengl.Texture;
-import static org.lwjgl.opengl.GL11.*;
+
 import java.util.List;
 
-public class M4A3E8 implements ShermanTank {
-    //init color
-    static float[] white = { 1.0f, 1.0f, 1.0f, 1.0f };
+import static org.lwjgl.opengl.GL11.*;
 
+public class TigerI implements ShermanTank {
     public float turretAngle;
     public float pitchAngle;
-    public M4A3E8(){
+    public TigerI(){
         turretAngle = 0;
         pitchAngle = 0;
     }
     @Override
-    public void drawTank(boolean GoodAnimation , List<Texture> tt , float turretAngle , float pitchAngle){
+    public void drawTank(boolean GoodAnimation, List<Texture> tt, float turretAngle, float pitchAngle) {
+        // limit pitch and turret
         if(pitchAngle > 10){
             pitchAngle = 10;
             this.pitchAngle = 10;
@@ -37,23 +36,25 @@ public class M4A3E8 implements ShermanTank {
             this.turretAngle = 0;
             turretAngle = 0;
         }
-        //init shapes
-        M4Body body = new M4Body();
-        M4Turret turret = new M4Turret();
-        //draw
-        glPushMatrix();{
-            glColor3f(white[0], white[1], white[2]);
-            body.drawBody();
 
-            glTranslatef(5.7f,3.5f,0);
-            glRotatef(turretAngle , 0, 1, 0);
-            turret.drawTurret(pitchAngle);
+        TigerBody body = new TigerBody();
+        TigerTurret turret = new TigerTurret();
+
+        glPushMatrix();{
+            glTranslatef(0,0,0);
+            body.drawBody();
+            glPushMatrix();{
+                glTranslatef(9,6.5f,6);
+                glRotatef(turretAngle , 0, 1, 0);
+                turret.drawTurret(pitchAngle);
+            }
+            glPopMatrix();
         }
         glPopMatrix();
     }
 
     @Override
     public AmericanTanks getTypes() {
-        return AmericanTanks.M4A3E8;
+        return null;
     }
 }
