@@ -4,10 +4,9 @@ import java.nio.FloatBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
-import objects3D.models.Ground;
-import objects3D.models.M4A3E8;
-import objects3D.models.TigerI;
-import objects3D.models.Tree;
+import GraphicsObjects.Vector4f;
+import objects3D.models.*;
+import objects3D.models.animations.Section4FOVChange;
 import objects3D.models.componments.M4Turret;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.LWJGLException;
@@ -112,6 +111,11 @@ public class MainWindow {
 	public float tigerRotation = 0;
 
 	public float m4X = 0 , m4Y = 0 , m4Z = 0 ;
+	RigidBody rigidBody = new RigidBody(m4X,m4Y,m4Z,new Vector4f(10,90,0,0));
+
+	/** animation class */
+	Section4FOVChange animation4 = new Section4FOVChange(45);
+	Section4FOVChange animation5 = new Section4FOVChange(180);
 
 	/** */
 	// static GLfloat light_position[] = {0.0, 100.0, 100.0, 0.0};
@@ -454,6 +458,9 @@ public class MainWindow {
 
 		cameraOn();
 		changeCamera();
+		updateAnimation();
+
+
 
 		if (DRAWGRID) {
 			glPushMatrix();
@@ -524,7 +531,7 @@ public class MainWindow {
 		glPopMatrix();
 
 		/** other sherman tanks*/
-		if(animationSection <= 1){
+		if(animationSection <= 2){
 			M4A3E8 tank3 = new M4A3E8();
 			glPushMatrix();{
 				M4A3E8 tank1 = new M4A3E8();
@@ -549,17 +556,32 @@ public class MainWindow {
 				m4X = easy8X;
 				m4Y = easy8Y;
 				m4Z = easy8Z - 9000;
+
+				//rigidBody keep tracking position of tank3
+				/*rigidBody.x = m4X;
+				rigidBody.y = m4Y;
+				rigidBody.z = m4Z;*/
+
 				if(animationSection == 1){
 					tank3.ammunitionExplosion();
 					M4Turret turret = new M4Turret();
 					glPushMatrix();{
-						glTranslatef(0,5,0);
+
+						rigidBody.update(delta);
+						glScalef(0.01f, 0.01f, 0.01f);
+						glTranslatef(rigidBody.z,rigidBody.y,rigidBody.x);
+						glScalef(100f, 100f, 100f);
+						glRotatef(rigidBody.rotation,0,1,1);
 						turret.drawTurret(0,textureList);
+						if(rigidBody.isAnimationFinished){
+							//move to next section
+							animationSection++;
+						}
 					}
 					glPopMatrix();
 				}
 				tank3.drawTank(!BadAnimation,textureList,0,0);
-				System.out.println(m4X + " " + m4Y + " " + m4Z);
+				//System.out.println(m4X + " " + m4Y + " " + m4Z);
 			}
 			glPopMatrix();
 
@@ -711,6 +733,96 @@ public class MainWindow {
 		GL11.glLoadIdentity();
 		GLU.gluPerspective(cameraFOV, 1.5f, 2.8f, 2000000);
 		GL11.glMatrixMode(GL11.GL_MODELVIEW);
+		//System.out.println(cameraFOV);
+	}
 
+	public void updateAnimation(){
+		if(animationSection == 2){
+			animation4.update();
+			this.cameraFOV = animation4.FOV;
+			if(animation4.isAnimationFinished){
+				animationSection++;
+			}
+		}
+		if(animationSection == 3){
+			animation5.updateReverse();
+			this.cameraFOV = animation5.FOV;
+			if(animation5.isAnimationFinished){
+				animationSection++;
+			}
+			cameraX = -(easy8X-1000);
+			cameraY = easy8Y+1000;
+			cameraZ = easy8Z-1000;
+			cameraCenterX = tigerX;
+			cameraCenterY = tigerY;
+			cameraCenterZ = tigerZ;
+			//change tank position
+			if(animation5.FOV >= 160){
+				easy8X = 0;
+				easy8.turretAngle = -34;
+				easy8Z = 0;
+				easy8Rotation = 180;
+
+				tigerX = 2000;
+				tigerZ = 2000;
+				tigerTank.turretAngle = -40;
+				tigerTank.pitchAngle = -5;
+			}
+		}
+		//System.out.println(easy8.turretAngle);
+		if(animationSection == 3 || animationSection == 4){
+			if(animationSection == 4){
+				cameraX = -(easy8X-1000);
+				cameraY = easy8Y+1000;
+				cameraZ = easy8Z-1000;
+
+				cameraCenterX = tigerX;
+				cameraCenterY = tigerY;
+				cameraCenterZ = tigerZ;
+			}
+			easy8X += 15;
+			easy8.turretAngle -= 0.18f;
+			if(easy8X >= 2800 && easy8X <= 2900 && !easy8.isGunShot){
+				easy8.shot();
+			}
+
+			tigerTank.turretAngle -= 0.1f;
+			tigerX += 5;
+			if(easy8X >= 3000){
+				animationSection++;
+			}
+		}
+		if(animationSection == 5){
+			cameraX = -(tigerX - 1000);
+			cameraY = tigerY + 1000;
+			cameraZ = tigerZ + 1000;
+
+			cameraCenterX = easy8X;
+			cameraCenterY = easy8Y;
+			cameraCenterZ = easy8Z;
+
+			tigerX += 5;
+			tigerTank.turretAngle -= 0.1f;
+			//System.out.println(easy8X);
+			easy8X += 15;
+			easy8.turretAngle -= 0.18f;
+			if(tigerTank.turretAngle < -74 && tigerTank.turretAngle >= -75 && !tigerTank.isGunShot){
+				tigerTank.shot();
+			}
+			if(easy8X >= 8000){
+				animationSection++;
+			}
+		}
+		if(animationSection == 6){
+			cameraCenterX = easy8X;
+			cameraCenterY = easy8Y;
+			cameraCenterZ = easy8Z;
+
+
+
+			cameraX = -(easy8X) + 1000;
+			cameraY = easy8Y + 8000;
+			cameraZ = easy8Z + 1000;
+		}
 	}
 }
