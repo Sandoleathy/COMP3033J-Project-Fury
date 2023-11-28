@@ -19,13 +19,14 @@ public class M4Body {
     public M4Body(){
 
     }
-    public void drawBody(){
+    public void drawBody(List<Texture> tt){
         float width = 4.5f;
         //y is vertical
         //z is front back
         //x is left right
         glPushMatrix();{
             //here is the front armor
+            tt.get(5).bind();
             glColor3f(white[0], white[1], white[2]);
 
             glTranslatef(0.0f, 0.5f, 0.0f);
@@ -46,7 +47,7 @@ public class M4Body {
 
             glPushMatrix();{
                 //here is the turret base
-
+                tt.get(0).bind();
                 glTranslatef(3.0f, 0.0f, 0.0f);
 
                 pList = new ArrayList<>();
@@ -65,6 +66,7 @@ public class M4Body {
                 dynamicTexCube.drawTexCube();
 
                 glPushMatrix();{
+
                     // here is the engine
 
                     glTranslatef(5.0f, 0.0f, 0.0f);
@@ -86,6 +88,7 @@ public class M4Body {
 
                     glPushMatrix();{
                         // here is the staff on engine
+                        tt.get(4).bind();
                         glTranslatef(2.5f, 0.0f, 0.0f);
 
                         pList = new ArrayList<>();
@@ -110,6 +113,7 @@ public class M4Body {
             glPopMatrix();
 
             glPushMatrix();{
+                tt.get(0).bind();
                 // here is the chassis
                 //glColor3f(black[0], black[1], black[2]);
                 glColor3f(white[0], white[1], white[2]);
@@ -133,6 +137,7 @@ public class M4Body {
                 dynamicTexCube.drawTexCube();
 
                 glPushMatrix();{
+                    tt.get(3).bind();
                     //left track
                     //glColor3f(black[0], black[1], black[2]);
                     glTranslatef(0.0f , -0.6f , -4.5f);
@@ -157,6 +162,7 @@ public class M4Body {
                 glPopMatrix();
                 glPushMatrix();{
                     //right track
+                    tt.get(3).bind();
                     glTranslatef(0.0f , -0.6f , 3.0f);
 
                     float trackWidth = 1.5f;

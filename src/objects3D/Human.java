@@ -68,8 +68,8 @@ public class Human {
 			glPushMatrix();
 			{
 				glTranslatef(0.0f, 0.5f, 0.0f);
-				texture = tt.get(1);
-				texture.bind();
+				//texture = tt.get(1);
+				//texture.bind();
 
 				//sphere.drawSphere(0.5f, 32, 32);
 				texSphere.DrawTexSphere(0.5f,32,32,texture);
@@ -84,15 +84,15 @@ public class Human {
 					cylinder.drawCylinder(0.15f, 0.7f, 32);
 
 					// head
-					glColor3f(yellow[0], yellow[1], yellow[2]);
+					glColor3f(white[0], white[1], white[2]);
 					glMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, Utils.ConvertForGL(red));
 					glPushMatrix();
 					{
 
 						glTranslatef(0.0f, 0.0f, 1.0f);
 
-						sphere.drawSphere(0.5f, 32, 32);
-						//texSphere.DrawTexSphere(0.5f,32,32,texture);
+						//sphere.drawSphere(0.5f, 32, 32);
+						texSphere.DrawTexSphere(0.5f,32,32,texture);
 
 						glTranslatef(0.2f, 0.4f, 0.0f);
 						glColor3f(black[0], black[1], black[2]);
@@ -100,10 +100,7 @@ public class Human {
 						glTranslatef(-0.4f, 0.0f, 0.0f);
 						sphere.drawSphere(0.1f, 32, 32);
 
-						glColor3f(white[0], white[1], white[2]);
-						glTranslatef(0.0f,0.0f,2.0f);
-						TexCube texCube = new TexCube();
-						texCube.drawTexCube();
+
 
 						glPopMatrix();
 					}

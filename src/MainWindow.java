@@ -4,8 +4,11 @@ import java.nio.FloatBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
+import objects3D.models.Ground;
 import objects3D.models.M4A3E8;
 import objects3D.models.TigerI;
+import objects3D.models.Tree;
+import objects3D.models.componments.M4Turret;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.Sys;
@@ -14,8 +17,9 @@ import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.util.glu.GLU.*;
 
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.util.glu.GLU;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.opengl.Texture;
 import org.newdawn.slick.opengl.TextureLoader;
@@ -33,14 +37,20 @@ import objects3D.Human;
 
 // Do not touch this class, I will be making a version of it for your 3rd Assignment 
 public class MainWindow {
+	/** textures */
 	public static List<Texture> textureList;
+	public static List<Texture> smokeTextureList;
+	public List<Texture> humanTexture;
 
 	private boolean MouseOnepressed = true;
 	private boolean dragMode = false;
 	private boolean BadAnimation = true;
 	private boolean Earth = false;
-	/** position of pointer */
-	float x = 400, y = 300;
+	/** position of camera */
+	float cameraX = 4240, cameraY = 3380 , cameraZ = 4660;
+	int cameraCenterTo = 0;
+	float cameraFOV = 45f;
+	float cameraCenterX = 1 , cameraCenterY = 0 , cameraCenterZ = 0;
 	/** angle of rotation */
 	float rotation = 0;
 	/** time at last frame */
@@ -96,12 +106,24 @@ public class MainWindow {
 	M4A3E8 easy8 = new M4A3E8();
 	TigerI tigerTank = new TigerI();
 
+	public float easy8X = 0 , easy8Y = 400 , easy8Z = 0;
+	public float easy8Rotation = 90;
+	public float tigerX = 27000 , tigerY = 250 , tigerZ = 18000;
+	public float tigerRotation = 0;
+
+	public float m4X = 0 , m4Y = 0 , m4Z = 0 ;
+
 	/** */
 	// static GLfloat light_position[] = {0.0, 100.0, 100.0, 0.0};
 
 	// support method to aid in converting a java float array into a Floatbuffer
 	// which is faster for the opengl layer to process
 
+
+	/** animation flag */
+	public int animationSection = 0;
+
+	/** */
 	public void start() {
 
 		StartTime = getTime();
@@ -171,21 +193,49 @@ public class MainWindow {
 
 		/** rest key is R */
 		if (Keyboard.isKeyDown(Keyboard.KEY_R))
-			MyArcball.reset();
+			//MyArcball.reset();
+			BadAnimation = !BadAnimation;
 
 		/* bad animation can be turn on or off using A key) */
 
+		/** this part is for camera control */
 		if (Keyboard.isKeyDown(Keyboard.KEY_A)) {
-			BadAnimation = !BadAnimation;
-
+			//
+			cameraX = cameraX -80;
 		}
-		if (Keyboard.isKeyDown(Keyboard.KEY_D))
-			x += 0.35f * delta;
-
-		if (Keyboard.isKeyDown(Keyboard.KEY_W))
-			y += 0.35f * delta;
-		if (Keyboard.isKeyDown(Keyboard.KEY_S))
-			y -= 0.35f * delta;
+		if (Keyboard.isKeyDown(Keyboard.KEY_D)) {
+			//x += 0.35f * delta;
+			cameraX = cameraX + 80;
+		}
+		if (Keyboard.isKeyDown(Keyboard.KEY_W)) {
+			//y += 0.35f * delta;
+			cameraZ = cameraZ - 80;
+		}
+		if (Keyboard.isKeyDown(Keyboard.KEY_S)) {
+			//y -= 0.35f * delta;
+			cameraZ = cameraZ + 80;
+		}
+		if(Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)){
+			cameraY = cameraY + 80;
+		}
+		if(Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)){
+			cameraY = cameraY -80;
+		}
+		if(Keyboard.isKeyDown(Keyboard.KEY_C)){
+			if(cameraCenterTo == 1){
+				cameraCenterTo = 0;
+			}else{
+				cameraCenterTo = 1;
+			}
+		}
+		if(Keyboard.isKeyDown(Keyboard.KEY_Z)){
+			cameraFOV -= 0.5f;
+		}
+		if(Keyboard.isKeyDown(Keyboard.KEY_X)){
+			cameraFOV += 0.5f;
+		}
+		//System.out.println(x + " " + y + " " + z);
+		// print the camera position
 
 		if (Keyboard.isKeyDown(Keyboard.KEY_Q))
 			rotation += 0.35f * delta;
@@ -193,7 +243,7 @@ public class MainWindow {
 			Earth = !Earth;
 		}
 
-		/**tank control */
+		/**easy8 tank control */
 		if(Keyboard.isKeyDown(Keyboard.KEY_UP)){
 			easy8.pitchAngle += 0.1f;
 		}
@@ -206,7 +256,10 @@ public class MainWindow {
 		if(Keyboard.isKeyDown(Keyboard.KEY_LEFT)){
 			easy8.turretAngle -= (float) 24 /60;
 		}
-
+		if(Keyboard.isKeyDown(Keyboard.KEY_SPACE) && !easy8.isGunShot){
+			easy8.shot();
+			System.out.println("On way!!!");
+		}
 		/** */
 		
 		if (waitForKeyrelease) // check done to see if key is released
@@ -229,10 +282,9 @@ public class MainWindow {
 			waitForKeyrelease = true;
 		} else {
 			waitForKeyrelease = false;
-
 		}
 
-		// keep quad on the screen
+		/*// keep quad on the screen
 		if (x < 0)
 			x = 0;
 		if (x > 1200)
@@ -240,7 +292,7 @@ public class MainWindow {
 		if (y < 0)
 			y = 0;
 		if (y > 800)
-			y = 800;
+			y = 800;*/
 
 		updateFPS(); // update FPS Counter
 
@@ -289,16 +341,18 @@ public class MainWindow {
 		MyArcball.startBall(0, 0, 1200, 800);
 		glMatrixMode(GL_MODELVIEW);
 		FloatBuffer lightPos = BufferUtils.createFloatBuffer(4);
-		lightPos.put(10000f).put(1000f).put(1000).put(0).flip();
+		lightPos.put(10000).put(10000).put(1000).put(100).flip();
 
 		FloatBuffer lightPos2 = BufferUtils.createFloatBuffer(4);
-		lightPos2.put(0f).put(1000f).put(0).put(-1000f).flip();
+		lightPos2.put(0f).put(1000f).put(0).put(1000f).flip();
 
 		FloatBuffer lightPos3 = BufferUtils.createFloatBuffer(4);
-		lightPos3.put(-10000f).put(1000f).put(1000).put(0).flip();
+		lightPos3.put(-10000).put(1000f).put(1000).put(500).flip();
 
 		FloatBuffer lightPos4 = BufferUtils.createFloatBuffer(4);
 		lightPos4.put(1000f).put(1000f).put(1000f).put(0).flip();
+		FloatBuffer lightPos5 = BufferUtils.createFloatBuffer(4);
+		lightPos5.put(-10000).put(10000f).put(10000f).put(10000).flip();
 
 		glLight(GL_LIGHT0, GL_POSITION, lightPos); // specify the
 													// position
@@ -307,7 +361,7 @@ public class MainWindow {
 		// glEnable(GL_LIGHT0); // switch light #0 on // I've setup specific materials
 		// so in real light it will look abit strange
 
-		glLight(GL_LIGHT1, GL_POSITION, lightPos); // specify the
+		glLight(GL_LIGHT1, GL_POSITION, lightPos2); // specify the
 													// position
 													// of the
 													// light
@@ -329,6 +383,10 @@ public class MainWindow {
 													// light
 		glEnable(GL_LIGHT3); // switch light #0 on
 		glLight(GL_LIGHT3, GL_DIFFUSE, Utils.ConvertForGL(grey));
+
+		glLight(GL_LIGHT4, GL_POSITION , lightPos5);
+		glEnable(GL_LIGHT4);
+		glLight(GL_LIGHT4, GL_AMBIENT, Utils.ConvertForGL(grey));
 
 		glEnable(GL_LIGHTING); // switch lighting on
 		glEnable(GL_DEPTH_TEST); // make sure depth buffer is switched
@@ -393,6 +451,10 @@ public class MainWindow {
 		 * change this code to move the grid around and change its starting angle as you
 		 * please
 		 */
+
+		cameraOn();
+		changeCamera();
+
 		if (DRAWGRID) {
 			glPushMatrix();
 			Grid MyGrid = new Grid();
@@ -401,40 +463,136 @@ public class MainWindow {
 			MyGrid.DrawGrid();
 			glPopMatrix();
 		}
-
-		glPushMatrix();
-		{
-
-			Human MyHuman = new Human();
-			glTranslatef(300, 400, 0);
+		/** sky box */
+		glPushMatrix();{
+			glColor3f(white[0], white[1], white[2]);
+			glRotatef(90,1,0,0);
+			glTranslatef(0,0,0);
+			TexSphere skyBox = new TexSphere();
 			glScalef(100f, 100f, 100f);
 
-			if (!BadAnimation) {
+			skyBox.DrawTexSphere(3000,32,32,textureList.get(2));
+		}
+		glPopMatrix();
+
+		/** grid ground */
+		glPushMatrix();{
+			glTranslatef(0, 0, 0);
+			glScalef(100f, 100f, 100f);
+			/*Grid ground = new Grid();
+			ground.DrawGrid();*/
+			Ground g = new Ground();
+			Texture t = textureList.get(1);
+			g.drawGround(t);
+		}
+		glPopMatrix();
+
+		/** easy8 tank */
+		glPushMatrix();
+		{
+			glTranslatef(easy8X, easy8Y, easy8Z);
+			glScalef(100f, 100f, 100f);
+			glRotatef(easy8Rotation , 0 , 1 , 0);
+			if (!BadAnimation && animationSection == 0) {
 				// insert your animation code to correct the postion for the human rotating
-			/*glTranslatef(posn_x * 3.0f, 0.0f, posn_y * 3.0f);
-			glRotatef(thetaDeg,0.0f,1.0f,0.0f);*/
+				/*glTranslatef(posn_x * 3.0f, 0.0f, posn_y * 3.0f);
+				glRotatef(thetaDeg,0.0f,1.0f,0.0f);*/
+				if(easy8Z < 10000){
+					easy8Z += 20;
+				}
+				if(easy8Z >= 10000){
+					animationSection++;
+				}
 			} else {
 
 				// bad animation version
 				//glTranslatef(posn_x * 3.0f, 0.0f, posn_y * 3.0f);
 			}
 
-
+			easy8.turret.setSmokeList(smokeTextureList);
 			easy8.drawTank(!BadAnimation, textureList, easy8.turretAngle, easy8.pitchAngle);
 
 			//MyHuman.drawHuman(delta, !BadAnimation , textureList); // give a delta for the Human object ot be animated
+			glPushMatrix();{
+				Human tang = new Human();
+				glTranslatef(5,2.8f,-1.5f);
+				glRotatef(90,0,1,0);
+				tang.drawHuman(0,false,humanTexture);
+			}
+			glPopMatrix();
 		}
 		glPopMatrix();
+
+		/** other sherman tanks*/
+		if(animationSection <= 1){
+			M4A3E8 tank3 = new M4A3E8();
+			glPushMatrix();{
+				M4A3E8 tank1 = new M4A3E8();
+				glTranslatef(easy8X, easy8Y, easy8Z - 3000);
+				glScalef(100f, 100f, 100f);
+				glRotatef(easy8Rotation , 0 , 1 , 0);
+				tank1.drawTank(!BadAnimation,textureList,0,0);
+			}
+			glPopMatrix();
+			glPushMatrix();{
+				M4A3E8 tank1 = new M4A3E8();
+				glTranslatef(easy8X, easy8Y, easy8Z-6000);
+				glScalef(100f, 100f, 100f);
+				glRotatef(easy8Rotation , 0 , 1 , 0);
+				tank1.drawTank(!BadAnimation,textureList,0,0);
+			}
+			glPopMatrix();
+			glPushMatrix();{
+				glTranslatef(easy8X, easy8Y, easy8Z - 9000);
+				glScalef(100f, 100f, 100f);
+				glRotatef(easy8Rotation , 0 , 1 , 0);
+				m4X = easy8X;
+				m4Y = easy8Y;
+				m4Z = easy8Z - 9000;
+				if(animationSection == 1){
+					tank3.ammunitionExplosion();
+					M4Turret turret = new M4Turret();
+					glPushMatrix();{
+						glTranslatef(0,5,0);
+						turret.drawTurret(0,textureList);
+					}
+					glPopMatrix();
+				}
+				tank3.drawTank(!BadAnimation,textureList,0,0);
+				System.out.println(m4X + " " + m4Y + " " + m4Z);
+			}
+			glPopMatrix();
+
+		}
+
+
 		/**tiger tank */
 		glPushMatrix();{
-			glTranslatef(-500, 400, 0);
+			glTranslatef(tigerX, tigerY, tigerZ);
 			glScalef(90f, 90f, 90f);
-			glRotatef(180, 0,1,0);
-			tigerTank.drawTank(!BadAnimation, textureList, easy8.turretAngle, easy8.pitchAngle);
+			glRotatef(tigerRotation, 0,1,0);
+			tigerTank.drawTank(!BadAnimation, textureList, tigerTank.turretAngle, tigerTank.pitchAngle);
 
 		}
 		glPopMatrix();
 
+		/** trees */
+		glPushMatrix();{
+			Tree t = new Tree();
+			glScalef(90f, 90f, 90f);
+
+			for(float x=300;x<=600;x+=60){
+				for(float y=0;y<=600;y+=60){
+					glPushMatrix();{
+						glTranslatef(x,0,y);
+						t.drawTree(textureList);
+					}
+					glPopMatrix();
+				}
+			}
+
+		}
+		glPopMatrix();
 		/*
 		 * This code puts the earth code in which is larger than the human so it appears
 		 * to change the scene
@@ -462,6 +620,7 @@ public class MainWindow {
 	}
 
 	public static void main(String[] argv) {
+
 		MainWindow hello = new MainWindow();
 		hello.start();
 	}
@@ -475,17 +634,83 @@ public class MainWindow {
 	public void init() throws IOException {
 
 		textureList = new ArrayList<>();
+		smokeTextureList = new ArrayList<>();
+		humanTexture = new ArrayList<>();
 		Texture t;
 		try{
-			t = TextureLoader.getTexture("JPG", ResourceLoader.getResourceAsStream("res/denim_fabric_diff_1k.jpg"));
+			t = TextureLoader.getTexture("JPG", ResourceLoader.getResourceAsStream("res/green_metal.jpg"));
 			textureList.add(t);
-			t = TextureLoader.getTexture("PNG", ResourceLoader.getResourceAsStream("res/fabric_pattern_05_col_01_1k.png"));
+			t = TextureLoader.getTexture("JPG", ResourceLoader.getResourceAsStream("res/grass_ground.jpg"));
 			textureList.add(t);
+			t = TextureLoader.getTexture("JPG", ResourceLoader.getResourceAsStream("res/sky.jpg"));
+			textureList.add(t);
+			t = TextureLoader.getTexture("PNG", ResourceLoader.getResourceAsStream("res/track.png"));
+			textureList.add(t);
+			t = TextureLoader.getTexture("JPG", ResourceLoader.getResourceAsStream("res/america_staff.jpg"));
+			textureList.add(t);
+			t = TextureLoader.getTexture("PNG", ResourceLoader.getResourceAsStream("res/armor_front.png"));//5
+			textureList.add(t);
+			t = TextureLoader.getTexture("JPG", ResourceLoader.getResourceAsStream("res/tiger_paint.jpg"));
+			textureList.add(t);
+			t = TextureLoader.getTexture("PNG", ResourceLoader.getResourceAsStream("res/tiger_track.png"));//7
+			textureList.add(t);
+
+		}catch (Exception e){
+			e.printStackTrace();
+		}
+
+		try{
+			smokeTextureList.add(TextureLoader.getTexture("PNG" , ResourceLoader.getResourceAsStream("res/smoke1.png")));
+			smokeTextureList.add(TextureLoader.getTexture("PNG" , ResourceLoader.getResourceAsStream("res/smoke2.png")));
+			smokeTextureList.add(TextureLoader.getTexture("PNG" , ResourceLoader.getResourceAsStream("res/fire_flash.png")));
+		}catch (Exception e){
+			e.printStackTrace();
+		}
+		try{
+			humanTexture.add(TextureLoader.getTexture("PNG" , ResourceLoader.getResourceAsStream("res/camouflage.png")));
+
 		}catch (Exception e){
 			e.printStackTrace();
 		}
 
 		//texture = TextureLoader.getTexture("PNG", ResourceLoader.getResourceAsStream("res/earthspace.png"));
 		System.out.println("Texture loaded okay ");
+	}
+
+	public void changeCamera(){
+		GL11.glLoadIdentity();
+
+		if(BadAnimation){
+			if(cameraCenterTo == 0){
+				cameraCenterX = easy8X;
+				cameraCenterY = easy8Y;
+				cameraCenterZ = easy8Z;
+			} else if (cameraCenterTo == 1) {
+				cameraCenterX = tigerX;
+				cameraCenterY = tigerY;
+				cameraCenterZ = tigerZ;
+			}
+		}
+
+
+		if(animationSection == 0 && !BadAnimation){
+			cameraX = easy8X;
+			cameraY = easy8Y + 500;
+			cameraZ = easy8Z + 300;
+			cameraCenterX = -cameraX;
+			cameraCenterY = cameraY;
+			cameraCenterZ = cameraZ - 1;
+		}
+
+		GLU.gluLookAt(-cameraX, cameraY, cameraZ,
+				cameraCenterX, cameraCenterY, cameraCenterZ,
+				0, 1, 0);
+	}
+	public void cameraOn() {
+		GL11.glMatrixMode(GL11.GL_PROJECTION);
+		GL11.glLoadIdentity();
+		GLU.gluPerspective(cameraFOV, 1.5f, 2.8f, 2000000);
+		GL11.glMatrixMode(GL11.GL_MODELVIEW);
+
 	}
 }

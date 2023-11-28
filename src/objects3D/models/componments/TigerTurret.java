@@ -3,6 +3,8 @@ package objects3D.models.componments;
 import GraphicsObjects.Point4f;
 import objects3D.Cylinder;
 import objects3D.DynamicTexCube;
+import objects3D.TexSphere;
+import org.newdawn.slick.opengl.Texture;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,10 +13,14 @@ import static org.lwjgl.opengl.GL11.*;
 
 public class TigerTurret {
     static float[] white = { 1.0f, 1.0f, 1.0f, 1.0f };
+    private float gunPipeRecoil;
+    private int gunShotSection;
     public TigerTurret(){
-
+        this.gunShotSection = 0;
+        this.gunPipeRecoil = 0;
     }
-    public void drawTurret(float pitchAngle){
+    public void drawTurret(float pitchAngle , List<Texture> tt){
+        tt.get(6).bind();
         glColor3f(white[0], white[1], white[2]);
 
         glTranslatef(0.0f, 0.0f, 0.0f);
@@ -54,7 +60,7 @@ public class TigerTurret {
                     //gun pipe
                     glRotatef(pitchAngle , 0 ,0 , 1);
                     //change gun pitch
-                    glTranslatef(1f,-0.5f,0);
+                    glTranslatef(1f + gunPipeRecoil,-0.5f,0);
                     glRotatef(-90,0,1,0);
                     cylinder.drawCylinder(0.5f,16f,180);
                 }
@@ -83,5 +89,35 @@ public class TigerTurret {
             glPopMatrix();
         }
         glPopMatrix();
+    }
+
+    public boolean gunShot() {
+        //gun shot animation
+        if(gunShotSection == 0){
+            // render somke
+
+            //pipe recoil
+            this.gunPipeRecoil += 0.5f;
+            if(gunPipeRecoil >= 2){
+                //move to next animation section
+                gunShotSection = 1;
+            }
+            //System.out.println(gunPipeRecoil);
+            return true;
+        }
+        if(gunShotSection == 1){
+            this.gunPipeRecoil -= 0.2f;
+            if(gunPipeRecoil <= 0){
+                gunPipeRecoil = 0;
+                gunShotSection = 2;
+                return true;
+            }
+        }
+        if(gunShotSection == 2){
+            //reset section
+            gunShotSection = 0;
+            return false;
+        }
+        return true;
     }
 }

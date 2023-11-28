@@ -3,6 +3,7 @@ package objects3D.models.componments;
 import GraphicsObjects.Point4f;
 import objects3D.Cylinder;
 import objects3D.DynamicTexCube;
+import org.newdawn.slick.opengl.Texture;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,7 +12,7 @@ import static org.lwjgl.opengl.GL11.*;
 
 public class TigerBody {
     static float[] white = { 1.0f, 1.0f, 1.0f, 1.0f };
-    public void drawBody(){
+    public void drawBody(List<Texture> tt){
         glColor3f(white[0], white[1], white[2]);
 
         glTranslatef(0.0f, 0.5f, 0.0f);
@@ -156,6 +157,7 @@ public class TigerBody {
             //back to body
             glPushMatrix();{
                 //right track
+                tt.get(7).bind();
                 glTranslatef(-3f,-0.3f,10f);
 
                 pList = new ArrayList<>();

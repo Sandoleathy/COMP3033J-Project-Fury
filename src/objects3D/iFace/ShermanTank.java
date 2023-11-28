@@ -7,4 +7,5 @@ import java.util.List;
 public interface ShermanTank {
     public void drawTank(boolean GoodAnimation , List<Texture> tt , float turretAngle , float pitchAngle);
     public AmericanTanks getTypes();
+    public void shot();
 }

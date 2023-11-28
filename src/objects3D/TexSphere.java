@@ -1,6 +1,8 @@
 package objects3D;
 
 import static org.lwjgl.opengl.GL11.*;
+
+import org.lwjgl.opengl.GL11;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.opengl.Texture;
 import org.newdawn.slick.opengl.TextureLoader;
@@ -23,61 +25,62 @@ public class TexSphere {
 	// 7b should be your primary source, we will cover more about circles in later
 	// lectures to understand why the code works
 	public void DrawTexSphere(float radius, float nSlices, float nSegments, Texture myTexture) {
-		float x, y, z;
-		float s, t; // texture coordinates
-		/*int width = myTexture.getTextureWidth();
-		int height = myTexture.getTextureHeight();*/
+		float x,y,z;
+		float s,t; // texture coordinates
 
-		float inctheta = (float) ((2.0f * Math.PI) / nSlices);
-		float incphi = (float) (Math.PI / nSegments);
+		float inctheta = (float) ((2.0f*Math.PI )/ nSlices );
+		float incphi   = (float) (Math.PI/ nSegments );
 
-		glBegin(GL_QUADS);
-		for (float theta = (float) -Math.PI; theta < Math.PI; theta += inctheta) {
-			for (float phi = (float) -(Math.PI / 2.0f); phi < (Math.PI / 2.0f); phi += incphi) {
-				x = (float) (Math.cos(phi) * Math.cos(theta) * radius);
-				y = (float) (Math.cos(phi) * Math.sin(theta) * radius);
-				z = (float) (Math.sin(phi) * radius);
+		myTexture.bind();
 
-				t = (float) (phi / (float) Math.PI) + 0.5f;
-				s = (float) (theta / Math.PI * 2.0f) + 0.5f;
+		GL11.glBegin(GL11.GL_QUADS);
+		for(float theta=(float) -Math.PI; theta<Math.PI; theta+=inctheta)
+		{
+			for(float phi=(float) -(Math.PI/2.0f); phi<(Math.PI/2.0f); phi+=incphi)
+			{
+				x = (float) (Math.cos(phi)* Math.cos(theta)*radius);
+				y =  (float) (Math.cos(phi)* Math.sin(theta)*radius);
+				z =  (float) (Math.sin(phi)*radius);
 
-				// glTexCoord2f(s,t); // should be here but seems to be a bug in LWJGL
-				glNormal3f(x, y, z);
-				glVertex3f(x, y, z);
+				t =   (float) (phi/(float)Math.PI) +0.5f;
+				s =    (float) (theta/Math.PI*2.0f) +0.5f ;
 
-				x = (float) (Math.cos(phi) * Math.cos(theta + inctheta) * radius);
-				y = (float) (Math.cos(phi) * Math.sin(theta + inctheta) * radius);
-				z = (float) (Math.sin(phi) * radius);
-				t = (float) (((float) phi / (float) Math.PI) + 0.5f);
-				s = (float) ((((float) theta + inctheta) / ((float) Math.PI * 2.0f))) + 0.5f;
+				//GL11.glTexCoord2f(s,t);  // should be here but seems to be a bug in LWJGL
+				GL11.glNormal3f(x,y,z);
+				GL11.glVertex3f(x,y,z);
 
-				glTexCoord2f(s, t);
+				x = (float) (Math.cos(phi)*Math.cos(theta+inctheta)*radius);
+				y = (float) (Math.cos(phi)*Math.sin(theta+inctheta)*radius);
+				z = (float) (Math.sin(phi)*radius);
+				t = (float) (((float)phi/(float)Math.PI)+0.5f);
+				s = (float) ((((float)theta+inctheta)/((float)Math.PI*2.0f)))+0.5f;
 
-				glNormal3f(x, y, z); // Mistake in previous version fixed ( abey 11/1/2018)
-				glVertex3f(x, y, z); // Top Right corner
+				GL11.glTexCoord2f(s,t);
 
-				x = (float) (Math.cos(phi + incphi) * Math.cos(theta + inctheta) * radius);
-				y = (float) (Math.cos(phi + incphi) * Math.sin(theta + inctheta) * radius);
-				z = (float) (Math.sin(phi + incphi) * radius);
-				t = (float) ((((float) phi + incphi) / (float) Math.PI) + 0.5f);
-				s = (float) ((((float) theta + inctheta) / ((float) Math.PI * 2.0f)) + 0.5f);
+				GL11.glNormal3f(x,y,z); //Mistake in previous version fixed ( abey 11/1/2018)
+				GL11.glVertex3f(x,y,z);  // Top Right corner
 
-				glTexCoord2f(s, t);
-				glNormal3f(x, y, z);
-				glVertex3f(x, y, z);
+				x = (float) (Math.cos(phi+incphi)*Math.cos(theta+inctheta)*radius);
+				y = (float) (Math.cos(phi+incphi)*Math.sin(theta+inctheta)*radius);
+				z = (float) (Math.sin(phi+incphi)*radius);
+				t = (float) ((((float)phi+incphi)/(float)Math.PI)+0.5f);
+				s = (float) ((((float)theta+inctheta)/((float)Math.PI*2.0f))+0.5f);
 
-				x = (float) (Math.cos(phi + incphi) * Math.cos(theta) * radius);
-				y = (float) (Math.cos(phi + incphi) * Math.sin(theta) * radius);
-				z = (float) (Math.sin(phi + incphi) * radius);
-				t = (float) ((((float) phi + incphi) / (float) Math.PI) + 0.5f);
-				s = (float) (((float) theta / ((float) Math.PI * 2.0f)) + 0.5f);
+				GL11.glTexCoord2f(s,t);
+				GL11.glNormal3f(x,y,z);
+				GL11.glVertex3f(x,y,z);
 
-				glTexCoord2f(s, t);
-				glNormal3f(x, y, z);
-				glVertex3f(x, y, z);
+				x = (float) (Math.cos(phi+incphi)*Math.cos(theta)*radius);
+				y = (float) (Math.cos(phi+incphi)*Math.sin(theta)*radius);
+				z = (float) (Math.sin(phi+incphi)*radius);
+				t = (float) ((((float)phi+incphi)/(float)Math.PI)+0.5f);
+				s = (float) (((float)theta/((float)Math.PI*2.0f))+0.5f);
+
+				GL11.glTexCoord2f(s,t);
+				GL11.glNormal3f(x,y,z);
+				GL11.glVertex3f(x,y,z);
 			}
 		}
-
-		glEnd();
+		GL11.glEnd();
 	}
 }
