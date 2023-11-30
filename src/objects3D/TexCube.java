@@ -22,6 +22,7 @@ public class TexCube {
 				new Point4f(-1,-1,1,0),	//1
 				new Point4f(-1, 1, -1,0),	//2
 				new Point4f(-1, 1, 1,0),	//3
+
 				new Point4f(1, -1, -1,0),	//4
 				new Point4f(1, -1, 1,0),	//5
 				new Point4f(1, 1, -1,0),	//6

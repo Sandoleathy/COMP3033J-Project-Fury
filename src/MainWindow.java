@@ -41,6 +41,11 @@ public class MainWindow {
 	public static List<Texture> smokeTextureList;
 	public List<Texture> humanTexture;
 
+	/** flag textures */
+	public Texture flagTexture;
+	public Texture baseTexture;
+	public Texture sphereTexture;
+
 	private boolean MouseOnepressed = true;
 	private boolean dragMode = false;
 	private boolean BadAnimation = true;
@@ -104,6 +109,7 @@ public class MainWindow {
 	/**tank values */
 	M4A3E8 easy8 = new M4A3E8();
 	TigerI tigerTank = new TigerI();
+	Flag flag = new Flag();
 
 	public float easy8X = 0 , easy8Y = 400 , easy8Z = 0;
 	public float easy8Rotation = 90;
@@ -139,12 +145,21 @@ public class MainWindow {
 			System.exit(0);
 		}
 
+		/** thread setting */
+		//设置守护线程防止主线程关闭后线程继续运行
+		engineThread.setDaemon(true);
+		tigerShellThread.setDaemon(true);
+		environmentSoundThread.setDaemon(true);
+		shermanKillTigerThread.setDaemon(true);
+
+		environmentSoundThread.start();
+
 		initGL(); // init OpenGL
 		getDelta(); // call once before loop to initialise lastFrame
 		lastFPS = getTime(); // call before loop to initialise fps timer
 
 		while (!Display.isCloseRequested()) {
-			int delta = getDelta();
+			int delta = (int) getDelta();
 			update(delta);
 			renderGL();
 			Display.update();
@@ -157,6 +172,11 @@ public class MainWindow {
 	public void update(int delta) {
 		// rotate quad
 		// rotation += 0.01f * delta;
+
+		long currentTime = getCurrentTime();
+		deltaTime = calculateDeltaTime(currentTime);
+
+		lastFrameTime = currentTime;
 
 		int MouseX = Mouse.getX();
 		int MouseY = Mouse.getY();
@@ -309,9 +329,9 @@ public class MainWindow {
 	 * 
 	 * @return milliseconds passed since last frame
 	 */
-	public int getDelta() {
+	public long getDelta() {
 		long time = getTime();
-		int delta = (int) (time - lastFrame);
+		long delta = (int) (time - lastFrame);
 		lastFrame = time;
 
 		return delta;
@@ -476,9 +496,9 @@ public class MainWindow {
 			glRotatef(90,1,0,0);
 			glTranslatef(0,0,0);
 			TexSphere skyBox = new TexSphere();
-			glScalef(100f, 100f, 100f);
+			glScalef(1000f, 1000f, 1000f);
 
-			skyBox.DrawTexSphere(3000,32,32,textureList.get(2));
+			skyBox.DrawTexSphere(1000,32,32,textureList.get(2));
 		}
 		glPopMatrix();
 
@@ -494,21 +514,31 @@ public class MainWindow {
 		}
 		glPopMatrix();
 
+		/** flag */
+		glPushMatrix();{
+			glTranslatef( -1000, 0 ,0);
+			glScalef(100f, 100f, 100f);
+			flag.drawFlag(flagTexture , sphereTexture , baseTexture);
+		}
+		glPopMatrix();
+
 		/** easy8 tank */
 		glPushMatrix();
 		{
 			glTranslatef(easy8X, easy8Y, easy8Z);
 			glScalef(100f, 100f, 100f);
 			glRotatef(easy8Rotation , 0 , 1 , 0);
-			if (!BadAnimation && animationSection == 0) {
+			if (!BadAnimation && animationSection <= 1) {
 				// insert your animation code to correct the postion for the human rotating
 				/*glTranslatef(posn_x * 3.0f, 0.0f, posn_y * 3.0f);
 				glRotatef(thetaDeg,0.0f,1.0f,0.0f);*/
-				if(easy8Z < 10000){
+				if(easy8Z < 15000){
 					easy8Z += 20;
 				}
 				if(easy8Z >= 10000){
-					animationSection++;
+					if(animationSection == 0){
+						animationSection++;
+					}
 				}
 			} else {
 
@@ -603,7 +633,8 @@ public class MainWindow {
 			Tree t = new Tree();
 			glScalef(90f, 90f, 90f);
 
-			for(float x=300;x<=600;x+=60){
+			// trees cause a lot of performant problems
+			/*for(float x=300;x<=600;x+=60){
 				for(float y=0;y<=600;y+=60){
 					glPushMatrix();{
 						glTranslatef(x,0,y);
@@ -611,7 +642,7 @@ public class MainWindow {
 					}
 					glPopMatrix();
 				}
-			}
+			}*/
 
 		}
 		glPopMatrix();
@@ -644,10 +675,21 @@ public class MainWindow {
 	public static void main(String[] argv) {
 
 		MainWindow hello = new MainWindow();
+
+		/*AudioPlayer test = new AudioPlayer("test.wav" , AudioPlayer.DEFAULT_MODE);
+		Thread testAudio = new Thread(test);
+		testAudio.start();
+		try{
+			Thread.sleep(5000);
+		}catch (Exception e){
+			e.printStackTrace();
+		}
+		test.stop();*/
+
 		hello.start();
+
 	}
 
-	Texture texture;
 
 	/*
 	 * Any additional textures for your assignment should be written in here. Make a
@@ -690,7 +732,15 @@ public class MainWindow {
 		}
 		try{
 			humanTexture.add(TextureLoader.getTexture("PNG" , ResourceLoader.getResourceAsStream("res/camouflage.png")));
+			humanTexture.add(TextureLoader.getTexture("PNG" , ResourceLoader.getResourceAsStream("res/tang_face.png")));
 
+		}catch (Exception e){
+			e.printStackTrace();
+		}
+		try{
+			flagTexture = TextureLoader.getTexture("PNG" , ResourceLoader.getResourceAsStream("res/Project_Texture_2023.png"));
+			sphereTexture = TextureLoader.getTexture("JPG" , ResourceLoader.getResourceAsStream("res/iron.jpg"));
+			baseTexture = TextureLoader.getTexture("JPG" , ResourceLoader.getResourceAsStream("res/marble.jpg"));
 		}catch (Exception e){
 			e.printStackTrace();
 		}
@@ -715,7 +765,7 @@ public class MainWindow {
 		}
 
 
-		if(animationSection == 0 && !BadAnimation){
+		if(animationSection <= 1 && !BadAnimation){
 			cameraX = easy8X;
 			cameraY = easy8Y + 500;
 			cameraZ = easy8Z + 300;
@@ -736,8 +786,42 @@ public class MainWindow {
 		//System.out.println(cameraFOV);
 	}
 
+
+	private long getCurrentTime() {
+		return System.nanoTime() / 1_000_000; // 转换为毫秒
+	}
+
+	private float calculateDeltaTime(long currentTime) {
+		return (currentTime - lastFrameTime) / 1000.0f; // 转换为秒
+	}
+
+
+
+	private long lastFrameTime;
+	private float deltaTime;
+	AudioPlayer environmentSound = new AudioPlayer("environment.wav" , AudioPlayer.LOOP_MODE);
+	Thread environmentSoundThread = new Thread(environmentSound);
+	AudioPlayer tankEngine = new AudioPlayer("tank_engine_1.wav",AudioPlayer.LOOP_MODE);
+	Thread engineThread = new Thread(tankEngine);
+	AudioPlayer tigerShell = new AudioPlayer("tiger_shell_coming.wav" , AudioPlayer.DEFAULT_MODE);
+	Thread tigerShellThread = new Thread(tigerShell);
+	AudioPlayer shermanKillTiger = new AudioPlayer("sherman_kill_tiger.wav" , AudioPlayer.DEFAULT_MODE);
+	Thread shermanKillTigerThread = new Thread(shermanKillTiger);
 	public void updateAnimation(){
+		if(!BadAnimation && animationSection == 0){
+			if(!tankEngine.isPlayed){
+				engineThread.start();
+			}
+			//System.out.println(easy8X + " " + easy8Y + " " + easy8Z);
+			if(easy8Z >= 9000 && !tigerShell.isPlayed){
+				tigerShellThread.start();
+			}
+		}
 		if(animationSection == 2){
+			//stop the audio and thread
+			tankEngine.stop();
+			tigerShell.stop();
+
 			animation4.update();
 			this.cameraFOV = animation4.FOV;
 			if(animation4.isAnimationFinished){
@@ -766,11 +850,13 @@ public class MainWindow {
 				tigerX = 2000;
 				tigerZ = 2000;
 				tigerTank.turretAngle = -40;
-				tigerTank.pitchAngle = -5;
+				tigerTank.pitchAngle = 0;
 			}
 		}
 		//System.out.println(easy8.turretAngle);
 		if(animationSection == 3 || animationSection == 4){
+			tankEngine.start();
+
 			if(animationSection == 4){
 				cameraX = -(easy8X-1000);
 				cameraY = easy8Y+1000;
@@ -782,13 +868,13 @@ public class MainWindow {
 			}
 			easy8X += 15;
 			easy8.turretAngle -= 0.18f;
-			if(easy8X >= 2800 && easy8X <= 2900 && !easy8.isGunShot){
+			if(easy8X >= 2600 && easy8X <= 2700 && !easy8.isGunShot){
 				easy8.shot();
 			}
 
 			tigerTank.turretAngle -= 0.1f;
 			tigerX += 5;
-			if(easy8X >= 3000){
+			if(easy8X >= 4000){
 				animationSection++;
 			}
 		}
@@ -814,15 +900,55 @@ public class MainWindow {
 			}
 		}
 		if(animationSection == 6){
+			tankEngine.stop();
+
+			easy8Rotation = 90;
+			easy8.turretAngle = -120;
+			easy8X = 10000;
+			easy8Z = 4000;
+
+			tigerTank.turretAngle = -140;
+
 			cameraCenterX = easy8X;
 			cameraCenterY = easy8Y;
 			cameraCenterZ = easy8Z;
 
-
-
 			cameraX = -(easy8X) + 1000;
 			cameraY = easy8Y + 8000;
 			cameraZ = easy8Z + 1000;
+
+			animationSection++;
+		}
+		if(animationSection == 7){
+			timeCounter = timeCounter + deltaTime;
+			//System.out.println(timeCounter);
+			if(!shermanKillTiger.isPlayed){
+				shermanKillTigerThread.start();
+			}
+			if(timeCounter < 7.7){
+				easy8Z += 2.5f;
+			}
+			if(timeCounter > 7.7){
+				easy8Z -= 2f;
+				easy8.turretAngle += 0.03f;
+			}
+			if(timeCounter >= 25.1 && timeCounter <= 25.2 && !easy8.isGunShot){
+				easy8.shot();
+			}
+			if(timeCounter >= 33.5 && timeCounter <= 33.6 && !easy8.isGunShot){
+				easy8.shot();
+			}
+			if(timeCounter < 25.1){
+				tigerTank.turretAngle -= 0.02f;
+			}
+			if(timeCounter < 33.5 && timeCounter > 25.1){
+				tigerTank.turretAngle -= 0.01f;
+			}
+			//System.out.println(easy8Z);
+			if(timeCounter >= 41){
+				animationSection++;
+			}
 		}
 	}
+	public float timeCounter = 0;
 }

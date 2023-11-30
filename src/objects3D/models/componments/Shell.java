@@ -17,6 +17,8 @@ public class Shell {
     public void drawShell(){
         Cylinder cylinder = new Cylinder();
         glPushMatrix();{
+            glTranslatef(0,0,0);
+            glRotatef(90,1,0,0);
             cylinder.drawCylinder(0.2f,10,32);
         }
         glPopMatrix();

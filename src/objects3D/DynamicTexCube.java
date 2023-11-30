@@ -24,8 +24,11 @@ public class DynamicTexCube {
             i++;
         }
     }
-    public void drawTexCube() {
 
+    /**
+     * This function can render 6 faces texture in one picture
+     */
+    public void drawTexCube() {
         GL11.glBegin(GL11.GL_QUADS);
         Vector4f v1 = vertices[faces[0][1]].MinusPoint(vertices[faces[0][0]]);
         Vector4f w1 = vertices[faces[0][3]].MinusPoint(vertices[faces[0][0]]);
@@ -118,6 +121,11 @@ public class DynamicTexCube {
 
         GL11.glEnd();
     }
+
+    /**
+     * Sometimes we want whole picture render in one face
+     * use this function
+     */
     public void drawSimpleTexCube(){
         glBegin(GL_QUADS);
         for (int face = 0; face < 6; face++) { // per face

@@ -4,6 +4,7 @@ import GraphicsObjects.Point4f;
 import objects3D.Cylinder;
 import objects3D.DynamicTexCube;
 import objects3D.TexSphere;
+import objects3D.models.AudioPlayer;
 import org.newdawn.slick.opengl.Texture;
 
 import java.util.ArrayList;
@@ -15,9 +16,14 @@ public class TigerTurret {
     static float[] white = { 1.0f, 1.0f, 1.0f, 1.0f };
     private float gunPipeRecoil;
     private int gunShotSection;
+    AudioPlayer gunSound;
+    Thread gunThread;
     public TigerTurret(){
         this.gunShotSection = 0;
         this.gunPipeRecoil = 0;
+        gunSound = new AudioPlayer("tiger_shot.wav" , AudioPlayer.DEFAULT_MODE);
+        gunThread = new Thread(gunSound);
+        gunThread.setDaemon(true);
     }
     public void drawTurret(float pitchAngle , List<Texture> tt){
         tt.get(6).bind();
@@ -94,6 +100,19 @@ public class TigerTurret {
     public boolean gunShot() {
         //gun shot animation
         if(gunShotSection == 0){
+            //play sound
+            if(!gunSound.isPlayed){
+                //System.out.println(1111111);
+                if(gunThread.getState() == Thread.State.NEW){
+                    //first time play start thread
+                    gunThread.start();
+                }
+                else {
+                    gunSound.reset();
+                    gunSound.start();
+                }
+            }
+
             // render somke
 
             //pipe recoil
@@ -116,6 +135,7 @@ public class TigerTurret {
         if(gunShotSection == 2){
             //reset section
             gunShotSection = 0;
+            gunSound.isPlayed = false;
             return false;
         }
         return true;

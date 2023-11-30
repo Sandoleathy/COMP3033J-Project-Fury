@@ -16,12 +16,14 @@ public class TigerI implements ShermanTank {
     public boolean isGunShot;
     TigerBody body;
     TigerTurret turret;
+
     public TigerI(){
         turretAngle = 0;
         pitchAngle = 0;
         isGunShot = false;
         body = new TigerBody();
         turret = new TigerTurret();
+
     }
     @Override
     public void drawTank(boolean GoodAnimation, List<Texture> tt, float turretAngle, float pitchAngle) {

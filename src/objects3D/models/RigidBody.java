@@ -13,16 +13,16 @@ public class RigidBody {
         this.x = x;
         this.y = y;
         this.z = z;
-        this.gravity = 1;
+        this.gravity = 0.5f;
         this.velocity = v;
         rotation = 0;
     }
     public void update(float deltaTime) {
-        // 根据速度更新位置
+        // Update location based on speed
         x += velocity.x * deltaTime;
         y = y + (velocity.y * deltaTime);
         z += velocity.z * deltaTime;
-        // 简单的垂直运动，根据重力计算速度变化
+        // Simple vertical motion, calculating velocity change based on gravity
         velocity.y -= gravity * deltaTime;
         rotation += 4;
         if(y <= 0){

@@ -68,13 +68,13 @@ public class Human {
 			glPushMatrix();
 			{
 				glTranslatef(0.0f, 0.5f, 0.0f);
-				//texture = tt.get(1);
-				//texture.bind();
+				/*texture = tt.get(0);
+				texture.bind();*/
 
 				//sphere.drawSphere(0.5f, 32, 32);
 				texSphere.DrawTexSphere(0.5f,32,32,texture);
 				// neck
-				glColor3f(orange[0], orange[1], orange[2]);
+				//glColor3f(orange[0], orange[1], orange[2]);
 				glMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, Utils.ConvertForGL(orange));
 				glPushMatrix();
 				{
@@ -90,15 +90,18 @@ public class Human {
 					{
 
 						glTranslatef(0.0f, 0.0f, 1.0f);
+						texture = tt.get(1);
+						texture.bind();
 
 						//sphere.drawSphere(0.5f, 32, 32);
 						texSphere.DrawTexSphere(0.5f,32,32,texture);
 
-						glTranslatef(0.2f, 0.4f, 0.0f);
+						//no eyes
+						/*glTranslatef(0.2f, 0.4f, 0.0f);
 						glColor3f(black[0], black[1], black[2]);
 						sphere.drawSphere(0.1f, 32, 32);
 						glTranslatef(-0.4f, 0.0f, 0.0f);
-						sphere.drawSphere(0.1f, 32, 32);
+						sphere.drawSphere(0.1f, 32, 32);*/
 
 
 
@@ -107,15 +110,18 @@ public class Human {
 					glPopMatrix();
 
 					// left shoulder
-					glColor3f(blue[0], blue[1], blue[2]);
+					texture = tt.get(0);
+					texture.bind();
+
+					//glColor3f(blue[0], blue[1], blue[2]);
 					glMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, Utils.ConvertForGL(blue));
 					glPushMatrix();
 					{
 						glTranslatef(0.5f, 0.4f, 0.0f);
-						sphere.drawSphere(0.25f, 32, 32);
+						texSphere.DrawTexSphere(0.25f, 32, 32 , texture);
 
 						// left arm
-						glColor3f(orange[0], orange[1], orange[2]);
+						//glColor3f(orange[0], orange[1], orange[2]);
 						glMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, Utils.ConvertForGL(orange));
 						glPushMatrix();
 						{
@@ -127,15 +133,15 @@ public class Human {
 							cylinder.drawCylinder(0.15f, 0.7f, 32);
 
 							// left elbow
-							glColor3f(blue[0], blue[1], blue[2]);
+							//glColor3f(blue[0], blue[1], blue[2]);
 							glMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, Utils.ConvertForGL(blue));
 							glPushMatrix();
 							{
 								glTranslatef(0.0f, 0.0f, 0.75f);
-								sphere.drawSphere(0.2f, 32, 32);
+								texSphere.DrawTexSphere(0.2f, 32, 32 , texture);
 
 								// left forearm
-								glColor3f(orange[0], orange[1], orange[2]);
+								//glColor3f(orange[0], orange[1], orange[2]);
 								glMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, Utils.ConvertForGL(orange));
 								glPushMatrix();
 								{
@@ -145,12 +151,12 @@ public class Human {
 									cylinder.drawCylinder(0.1f, 0.7f, 32);
 
 									// left hand
-									glColor3f(blue[0], blue[1], blue[2]);
+									//glColor3f(blue[0], blue[1], blue[2]);
 									glMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, Utils.ConvertForGL(blue));
 									glPushMatrix();
 									{
 										glTranslatef(0.0f, 0.0f, 0.75f);
-										sphere.drawSphere(0.2f, 32, 32);
+										texSphere.DrawTexSphere(0.2f, 32, 32 , texture);
 
 									}
 									glPopMatrix();
@@ -165,15 +171,15 @@ public class Human {
 					// to chest
 					// now we are in chest level
 					// right shoulder
-					glColor3f(blue[0], blue[1], blue[2]);
+					//glColor3f(blue[0], blue[1], blue[2]);
 					glMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, Utils.ConvertForGL(orange));
 					glPushMatrix();
 					{
 						//push into right arm
 						glTranslatef(-0.5f, 0.4f, 0.0f);
-						sphere.drawSphere(0.25f, 32, 32);
+						texSphere.DrawTexSphere(0.25f, 32, 32 , texture);
 
-						glColor3f(orange[0], orange[1], orange[2]);
+						//glColor3f(orange[0], orange[1], orange[2]);
 						glMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, Utils.ConvertForGL(orange));
 						glPushMatrix();
 						{
@@ -185,15 +191,15 @@ public class Human {
 							 glRotatef(-27.5f,0.0f,1.0f,0.0f);
 							cylinder.drawCylinder(0.15f, 0.7f, 32);
 
-							glColor3f(blue[0], blue[1], blue[2]);
+							//glColor3f(blue[0], blue[1], blue[2]);
 							glMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, Utils.ConvertForGL(blue));
 							glPushMatrix();
 							{
 								//push into below
 								glTranslatef(0.0f, 0.0f, 0.75f);
-								sphere.drawSphere(0.2f, 32, 32);
+								texSphere.DrawTexSphere(0.2f, 32, 32,texture);
 
-								glColor3f(orange[0], orange[1], orange[2]);
+								//glColor3f(orange[0], orange[1], orange[2]);
 								glMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, Utils.ConvertForGL(orange));
 								glPushMatrix();
 								{
@@ -203,12 +209,12 @@ public class Human {
 									cylinder.drawCylinder(0.1f, 0.7f, 32);
 
 									// left hand
-									glColor3f(blue[0], blue[1], blue[2]);
+									//glColor3f(blue[0], blue[1], blue[2]);
 									glMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, Utils.ConvertForGL(blue));
 									glPushMatrix();
 									{
 										glTranslatef(0.0f, 0.0f, 0.75f);
-										sphere.drawSphere(0.2f, 32, 32);
+										texSphere.DrawTexSphere(0.2f, 32, 32,texture);
 									}
 									glPopMatrix();
 								}

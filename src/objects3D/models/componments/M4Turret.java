@@ -5,6 +5,7 @@ import objects3D.Cylinder;
 import objects3D.DynamicTexCube;
 
 import objects3D.TexCube;
+import objects3D.models.AudioPlayer;
 import org.newdawn.slick.opengl.Texture;
 import org.newdawn.slick.opengl.TextureLoader;
 import org.newdawn.slick.util.ResourceLoader;
@@ -22,11 +23,16 @@ public class M4Turret {
     private int gunShotSection;
     private boolean gunSmoke;
     private List<org.newdawn.slick.opengl.Texture> smokeList;
+    AudioPlayer gunSound;
+    Thread gunThread;
     public M4Turret(){
         this.gunShotSection = 0;
         this.gunPipeRecoil = 0;
         smokeList = new ArrayList<>();
         gunSmoke = false;
+        gunSound = new AudioPlayer("sherman_shot.wav" , AudioPlayer.DEFAULT_MODE);
+        gunThread = new Thread(gunSound);
+        gunThread.setDaemon(true);
     }
     public void drawTurret(float pitchAngle,List<Texture> tt){
         tt.get(0).bind();
@@ -117,6 +123,18 @@ public class M4Turret {
         gunSmoke = false;
         //gun shot animation
         if(gunShotSection == 0){
+            if(!gunSound.isPlayed){
+                //System.out.println(1111111);
+                if(gunThread.getState() == Thread.State.NEW){
+                    //first time play start thread
+                    gunThread.start();
+                }
+                else {
+                    gunSound.reset();
+                    gunSound.start();
+                }
+            }
+
             // render somke
             //pipe recoil
             this.gunPipeRecoil += 0.5f;
@@ -143,6 +161,7 @@ public class M4Turret {
         if(gunShotSection == 2){
             //reset section
             gunShotSection = 0;
+            gunSound.isPlayed = false;
             return false;
         }
         return true;

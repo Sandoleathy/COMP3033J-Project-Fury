@@ -3,6 +3,7 @@ package objects3D.models.componments;
 import GraphicsObjects.Point4f;
 import objects3D.Cylinder;
 import objects3D.DynamicTexCube;
+import org.lwjgl.opengl.GL11;
 import org.newdawn.slick.opengl.Texture;
 
 import java.util.ArrayList;
@@ -195,7 +196,30 @@ public class TigerBody {
                 texCube.drawTexCube();
             }
             glPopMatrix();
+            glPushMatrix();{
+                //shadow
+                glTranslatef(10f,-2.9f,5f);
+                glRotatef(90,1,0,0);
+                drawEllipseShadow(0,0,10,10,32);
+            }
+            glPopMatrix();
         }
         glPopMatrix();
+    }
+    public void drawEllipseShadow(float centerX, float centerY, float radiusX, float radiusY, int segments) {
+        GL11.glBegin(GL11.GL_TRIANGLE_FAN);
+        GL11.glColor4f(0.0f, 0.0f, 0.0f, 0.5f);
+        // Draw center point
+        GL11.glVertex2f(centerX, centerY);
+
+        // Calculate and plot the points on the ellipse
+        for (int i = 0; i <= segments; i++) {
+            float theta = (float) (2.0f * Math.PI * i / segments);
+            float x = centerX + radiusX * (float) Math.cos(theta);
+            float y = centerY + radiusY * (float) Math.sin(theta);
+            GL11.glVertex2f(x, y);
+        }
+
+        GL11.glEnd();
     }
 }
