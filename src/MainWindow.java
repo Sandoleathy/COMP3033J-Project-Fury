@@ -634,7 +634,7 @@ public class MainWindow {
 			glScalef(90f, 90f, 90f);
 
 			// trees cause a lot of performant problems
-			/*for(float x=300;x<=600;x+=60){
+			for(float x=300;x<=600;x+=60){
 				for(float y=0;y<=600;y+=60){
 					glPushMatrix();{
 						glTranslatef(x,0,y);
@@ -642,7 +642,7 @@ public class MainWindow {
 					}
 					glPopMatrix();
 				}
-			}*/
+			}
 
 		}
 		glPopMatrix();
