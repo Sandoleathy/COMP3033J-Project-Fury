@@ -2,9 +2,14 @@
   <library name="libs">
     <CLASSES>
       <root url="file://$PROJECT_DIR$/libs" />
+      <root url="file://$PROJECT_DIR$/libs/jmp123_0300_all" />
+      <root url="file://$PROJECT_DIR$/libs/jmp123_0300_all" />
     </CLASSES>
     <JAVADOC />
-    <SOURCES />
+    <SOURCES>
+      <root url="file://$PROJECT_DIR$/libs/jmp123_0300_all/src" />
+    </SOURCES>
     <jarDirectory url="file://$PROJECT_DIR$/libs" recursive="false" />
+    <jarDirectory url="file://$PROJECT_DIR$/libs/jmp123_0300_all" recursive="false" />
   </library>
 </component>
